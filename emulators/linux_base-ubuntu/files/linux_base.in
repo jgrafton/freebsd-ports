@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# $FreeBSD$
+#
+# PROVIDE: linux_base
+# REQUIRE: kldxref
+# BEFORE: linux
+# KEYWORD: nojail
+
+. /etc/rc.subr
+
+name="linux_base"
+desc="Configure Linux userspace"
+rcvar="linux_base_enable"
+start_cmd="${name}_start"
+stop_cmd=":"
+
+linux_base_start()
+{
+	load_kld -e 'linux64elf' linux64
+
+	sysctl compat.linux.emul_path=/usr/local/compat/linux
+
+	# Without it, things will fail like this:
+	#
+	# Error loading theme icon 'image-missing' for stock: Failed
+	# to load /org/gtk/libgtk/icons/16x16/status/image-missing.png:
+	# Unrecognized image file format
+	chroot /usr/local/compat/linux /usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/gdk-pixbuf-query-loaders --update-cache
+
+	# Let /etc/rc.d/linux do the rest.
+
+}
+
+load_rc_config $name
+
+: ${linux_base_enable:="NO"}
+
+run_rc_command "$1"

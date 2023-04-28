@@ -1,0 +1,16 @@
+[
+{
+	message: <<EOD
+To use this port, add:
+
+	linux_base_enable="YES"
+	linux_enable="YES"
+
+to /etc/rc.conf, then do:
+
+	# service linux_base start
+	# service linux start
+EOD,
+	type = install,
+}
+]
